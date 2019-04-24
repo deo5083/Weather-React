@@ -6,8 +6,7 @@ class App extends Component {
     super(props);
     
     this.state = {
-      searchInput: ""
-      ,searchResult: []
+      searchResult: []
       ,forecastResult:[]
       ,hasSearched: false
       ,isFound: false
@@ -38,7 +37,7 @@ class App extends Component {
     const build_forecast_call = "http://api.openweathermap.org/data/2.5/forecast"+build_call+",us&appid="+api_key+"&units=imperial";
     const forecast_call = await fetch(build_forecast_call);
     const forecast_response = await forecast_call.json();
-    console.log(forecast_response);
+    //console.log(forecast_response);
 
     let result, found;
     
@@ -69,7 +68,13 @@ class App extends Component {
   handleClick(e){
     //eslint-disable-next-line
     this.state.searchInput = document.getElementById('searchInput').value;
-    this.getWeather();
+    try {
+      this.getWeather();
+    } catch (error) {
+      console.log('API call failed: ' + error);
+    }
+    
+    
     e.preventDefault();
   }
 
@@ -86,7 +91,7 @@ class App extends Component {
 
       let displayHTML;
       if(this.state.hasSearched){
-        if(this.state.isFound){
+        if(this.state.isFound && document.getElementById('searchInput').value !== "" ){
           displayHTML = <ParseCity  weatherInfo={this.state.searchResult} forecastInfo={this.state.forecastResult}/>;
         } else {
           displayHTML = <NoResults searchWord={this.state.searchInput} />;
@@ -111,15 +116,24 @@ export default App;
 
 class NavBar extends Component {
   
+  
+  handleKeyUp(e){
+    if(e.keyCode === 13){
+      e.preventDefault();
+      document.getElementById('searchBtn').click();
+    }
+    
+  }
+
   render() {
     const nav = (
       <nav className="navbar navbar-dark bg-dark">
         <div className="container">
           <a className="navbar-brand" href="./">Weather</a>
-          <form className="form-inline" onSubmit={this.props.onClick}>
-            <input id="searchInput" className="form-control mr-sm-2" type="search" placeholder="Search by city or zip" aria-label="Search" />
+          <div className="form-inline" >
+            <input autoFocus id="searchInput" onKeyUp={this.handleKeyUp} className="form-control mr-sm-2" type="text" placeholder="Search by city or zip" aria-label="Search" />
             <SearchButton onClick={this.props.onClick} />
-          </form>
+          </div>
         </div>
       </nav>
     );
@@ -131,7 +145,7 @@ class SearchButton extends Component {
  
   render() {
     return (
-      <button className="btn btn-outline-info my-2 my-sm-0" type="submit" onClick={this.props.onClick} >Search</button>
+      <button id="searchBtn" className="btn btn-outline-info my-2 my-sm-0" type="submit" onClick={this.props.onClick} >Search</button>
     );
   }
 }
@@ -192,9 +206,10 @@ class ParseCity extends Component{
     const d = new Date();
     const tomorrow = d.getDate() +1;
     
+    //eslint-disable-next-line
     this.state.days = [this.formatDate(tomorrow), this.formatDate(tomorrow+1), this.formatDate(tomorrow+2), this.formatDate(tomorrow+3), this.formatDate(tomorrow+4)];
+    
     let localDays = this.state.days;
-    //console.log(days[2]);
     let dayWeather = [0,0,0,0,0];
     let dayDescription = [];
     let dayWind = [];
@@ -233,8 +248,6 @@ class ParseCity extends Component{
 
     }
     
-    //console.log(dayWeather[0] + ", " + dayWeather[1] + ", " + dayWeather[2] + ", " + dayWeather[3] + ", " + dayWeather[4]);
-    //.main.temp
     let allForecasts = [dayWeather, dayDescription, dayWind];
     return allForecasts;
 
@@ -246,7 +259,7 @@ class ParseCity extends Component{
     return (
 
       <div>
-        <span className="h3 lead">{result.name}</span> 
+        <span className="h2 lead">{result.name}</span> 
         <div className="row">
 
 
@@ -267,8 +280,10 @@ class ParseCity extends Component{
           </div>
 
         </div>
+
+
         <hr/>
-        <Forecast  forecast={this.getForecast()} dates={this.state.days}/>
+        <Forecast forecast={this.getForecast()} dates={this.state.days}/>
         
       </div>
 
@@ -299,24 +314,28 @@ class Forecast extends Component{
     const dayWind = this.props.forecast[2];
 
     return dayWeather.map((item,i) => 
-      <div className="col-sm-2" key={i}>
-        <div className="card" style={{width: '0 em'}}>
-          <div className="card-body">
-            <h5 className="card-title text-center">{arr[i].split('-')[1]}/{arr[i].split('-')[2]}</h5>
-            <hr/>
-            <h6 className="card-subtitle mb-2 text-muted">{item} &#8457;</h6>
-            <h6 className="card-subtitle mb-2 text-muted">{dayDescription[i]}</h6>
-            <h6 className="card-subtitle mb-2 text-muted">wind: {dayWind[i]} mph</h6>
-          </div>
+      
+        <div className="col-sm-2 card card-body" key={i}>
+          <div >
+              <h5 className="card-title text-center">{arr[i].split('-')[1]}/{arr[i].split('-')[2]}</h5>
+              <hr/>
+              <h6 className="card-subtitle mb-2 text-muted">{item} &#8457;</h6>
+              <h6 className="card-subtitle mb-2 text-muted">{dayDescription[i]}</h6>
+              <h6 className="card-subtitle mb-2 text-muted">wind: {dayWind[i]} mph</h6>
+            </div>
         </div>
-      </div>
+      
     );
   }
 
   render() {
     return (
-      <div className="row justify-content-center">
-          {this.generateCards()}
+      <div className=" ">
+        <div className="lead text-center">5-day Forecast</div>
+        <br/>
+        <div className="row justify-content-center">
+            {this.generateCards()}
+        </div>
       </div>
     );
   }
