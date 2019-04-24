@@ -15,8 +15,6 @@ class App extends Component {
     this.handleClick = this.handleClick.bind(this);
   } 
   
-
-  
   getWeather = async () => {
 
     const api_key = "ec98ea89c0ae53c7edf2e2293b6d5e10";
@@ -32,22 +30,10 @@ class App extends Component {
     const api_call = await fetch(call);
     const response = await api_call.json();
 
-    //console.log(response);
-
     const build_forecast_call = "http://api.openweathermap.org/data/2.5/forecast"+build_call+",us&appid="+api_key+"&units=imperial";
     const forecast_call = await fetch(build_forecast_call);
     const forecast_response = await forecast_call.json();
-    console.log(forecast_response);
 
-    /*
-    let layer = "temperature";
-    let zoom = "10";
-    //const build_map_call = "https://tile.openweathermap.org/map/"+layer+"/"+zoom+"/40.63/-75.39.png?appid="+api_key;
-    const build_map_call = "https://openweathermap.org/weathermap?basemap=map&cities=false&layer=temperature&lat=40.63&lon=-75.39&zoom=10&appid="+api_key;
-    const map_call = await fetch(build_map_call);
-    const map_response = await map_call.json();
-    console.log(map_response);
-    */
     let result, found;
     
     if (response.cod === 200){
@@ -124,7 +110,6 @@ class App extends Component {
 export default App;
 
 class NavBar extends Component {
-  
   
   handleKeyUp(e){
     if(e.keyCode === 13){
@@ -268,46 +253,38 @@ class ParseCity extends Component{
 
   }
 
-  
-
   parseInfo(){
     const result = this.props.weatherInfo;
     
     return (
 
-      <div>
+      <div className="container">
         <span className="h2 lead">{result.name}</span> 
         <div className="row">
 
-
-          <div className="col-sm">
-            <div className="row">
-
-
-              <div className="col-sm">
-                <span className="h1">{result.main.temp}</span> 
-                <span className="h2"> &#8457; </span>
-              </div>
-              <div className="col-sm">
-
-                <Icon icon={result.weather[0].icon} alt={result.weather[0].description}/>
-              </div>
-            </div>
-            
+          <div className="col-sm-4">
+            <span className="h1">{result.main.temp}</span> 
+            <span className="h2"> &#8457; </span>
+            <br/>
             <sup>Low/high: {result.main.temp_min}/{result.main.temp_max} &#8457; </sup>
           </div>
 
-          <div className="col-sm">
-            
-            <Info title="Description" data={result.weather[0].description}/>
-            <Info title="Humidity" data={result.main.humidity+"%"}/>
-            <Info title="Wind" data={result.wind.speed+" mph"}/>
+          <div className="col-sm-6">
+            <div className="row">
+              <div className="col-sm-3">
+                <Icon icon={result.weather[0].icon} alt={result.weather[0].description}/>
+              </div>
+              <div className="col-sm-7">
+                <Info title="Description" data={result.weather[0].description}/>
+                <Info title="Humidity" data={result.main.humidity+"%"}/>
+                <Info title="Wind" data={result.wind.speed+" mph"}/>
+              </div>
+            </div>
 
           </div>
 
         </div>
         
-
         <hr/>
         <Forecast forecast={this.getForecast()} dates={this.state.days}/>
         
@@ -321,8 +298,7 @@ class ParseCity extends Component{
     return (
       <div>
         <br/>
-        <br/>
-        <div className ="jumbotron">
+        <div className ="jumbotron" style={{ paddingTop: '32px', paddingBottom: '32px'}}>
           {this.parseInfo()}
         </div>
       </div>
@@ -335,7 +311,7 @@ class Icon extends Component{
     const iconURL = "http://openweathermap.org/img/w/"+this.props.icon+".png";
 
     return (
-      <div>
+      <div className="text-center">
         <img src={iconURL} alt={this.props.alt} style={{width:'100px', height:'90px'}}/>
       </div>
     );
@@ -353,7 +329,6 @@ class Forecast extends Component{
     const dayIcon = this.props.forecast[3];
 
     return dayWeather.map((item,i) => 
-      
         <div className="col-sm-2 card card-body" key={i}>
           <div >
             <h5 className="card-title text-center">{arr[i].split('-')[1]}/{arr[i].split('-')[2]}</h5>
@@ -367,14 +342,13 @@ class Forecast extends Component{
             <h6 className="card-subtitle mb-2 text-muted">wind: {dayWind[i]} mph</h6> 
           </div>
         </div>
-      
     );
   }
 
   render() {
     return (
       <div className=" ">
-        <div className="lead text-center">5-day Forecast</div>
+        <div className="lead text-center">5-Day Forecast</div>
         <br/>
         <div className="row justify-content-center">
             {this.generateCards()}
