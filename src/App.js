@@ -330,7 +330,7 @@ class Forecast extends Component{
 
   render() {
     return (
-      <div className="">
+      <div className=" ">
         <div className="lead text-center">5-day Forecast</div>
         <br/>
         <div className="row justify-content-center">
