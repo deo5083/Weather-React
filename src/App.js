@@ -364,7 +364,7 @@ class Forecast extends Component{
             <br/>
             <h6 className="card-subtitle mb-2 text-muted">{item} &#8457;</h6>
             <br/>
-            <h6 className="card-subtitle mb-2 text-muted">wind: {dayWind[i]} mph</h6>
+            <h6 className="card-subtitle mb-2 text-muted">wind: {dayWind[i]} mph</h6> 
           </div>
         </div>
       
