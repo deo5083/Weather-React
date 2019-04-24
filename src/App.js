@@ -6,8 +6,7 @@ class App extends Component {
     super(props);
     
     this.state = {
-      searchInput: ""
-      ,searchResult: []
+      searchResult: []
       ,forecastResult:[]
       ,hasSearched: false
       ,isFound: false
@@ -67,8 +66,7 @@ class App extends Component {
   }
   
   handleClick(e){
-    //eslint-disable-next-line
-    this.state.searchInput = document.getElementById('searchInput').value;
+    this.props.searchInput = document.getElementById('searchInput').value;
     this.getWeather();
     e.preventDefault();
   }
@@ -89,7 +87,7 @@ class App extends Component {
         if(this.state.isFound){
           displayHTML = <ParseCity  weatherInfo={this.state.searchResult} forecastInfo={this.state.forecastResult}/>;
         } else {
-          displayHTML = <NoResults searchWord={this.state.searchInput} />;
+          displayHTML = <NoResults searchWord={this.props.searchInput} />;
         }
         
       } else {
