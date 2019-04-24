@@ -37,8 +37,17 @@ class App extends Component {
     const build_forecast_call = "http://api.openweathermap.org/data/2.5/forecast"+build_call+",us&appid="+api_key+"&units=imperial";
     const forecast_call = await fetch(build_forecast_call);
     const forecast_response = await forecast_call.json();
-    //console.log(forecast_response);
+    console.log(forecast_response);
 
+    /*
+    let layer = "temperature";
+    let zoom = "10";
+    //const build_map_call = "https://tile.openweathermap.org/map/"+layer+"/"+zoom+"/40.63/-75.39.png?appid="+api_key;
+    const build_map_call = "https://openweathermap.org/weathermap?basemap=map&cities=false&layer=temperature&lat=40.63&lon=-75.39&zoom=10&appid="+api_key;
+    const map_call = await fetch(build_map_call);
+    const map_response = await map_call.json();
+    console.log(map_response);
+    */
     let result, found;
     
     if (response.cod === 200){
@@ -213,6 +222,7 @@ class ParseCity extends Component{
     let dayWeather = [0,0,0,0,0];
     let dayDescription = [];
     let dayWind = [];
+    let icons = [];
     
     for(var i = 0; i<forecastArr.length; i++){
 
@@ -220,42 +230,49 @@ class ParseCity extends Component{
         dayWeather[0] = forecastArr[i].main.temp;
         dayDescription[0] = forecastArr[i].weather[0].description;
         dayWind[0] = forecastArr[i].wind.speed;
+        icons[0] = forecastArr[i].weather[0].icon;
       }
 
       if(forecastArr[i].dt_txt.split(' ')[0] === localDays[1]){
         dayWeather[1] = forecastArr[i].main.temp;
         dayDescription[1] = forecastArr[i].weather[0].description;
         dayWind[1] = forecastArr[i].wind.speed;
+        icons[1] = forecastArr[i].weather[0].icon;
       }
 
       if(forecastArr[i].dt_txt.split(' ')[0] === localDays[2]){
         dayWeather[2] = forecastArr[i].main.temp;
         dayDescription[2] = forecastArr[i].weather[0].description;
         dayWind[2] = forecastArr[i].wind.speed;
+        icons[2] = forecastArr[i].weather[0].icon;
       }
 
       if(forecastArr[i].dt_txt.split(' ')[0] === localDays[3]){
         dayWeather[3] = forecastArr[i].main.temp;
         dayDescription[3] = forecastArr[i].weather[0].description;
         dayWind[3] = forecastArr[i].wind.speed;
+        icons[3] = forecastArr[i].weather[0].icon;
       }
 
       if(forecastArr[i].dt_txt.split(' ')[0] === localDays[4]){
         dayWeather[4] = forecastArr[i].main.temp;
         dayDescription[4] = forecastArr[i].weather[0].description;
         dayWind[4] = forecastArr[i].wind.speed;
+        icons[4] = forecastArr[i].weather[0].icon;
       }
 
     }
     
-    let allForecasts = [dayWeather, dayDescription, dayWind];
+    let allForecasts = [dayWeather, dayDescription, dayWind, icons];
     return allForecasts;
 
   }
 
+  
+
   parseInfo(){
     const result = this.props.weatherInfo;
-
+    
     return (
 
       <div>
@@ -264,10 +281,19 @@ class ParseCity extends Component{
 
 
           <div className="col-sm">
-            <p>
-              <span className="h1">{result.main.temp}</span> 
-              <span className="h2"> &#8457; </span>
-            </p>
+            <div className="row">
+
+
+              <div className="col-sm">
+                <span className="h1">{result.main.temp}</span> 
+                <span className="h2"> &#8457; </span>
+              </div>
+              <div className="col-sm">
+
+                <Icon icon={result.weather[0].icon} alt={result.weather[0].description}/>
+              </div>
+            </div>
+            
             <sup>Low/high: {result.main.temp_min}/{result.main.temp_max} &#8457; </sup>
           </div>
 
@@ -280,7 +306,7 @@ class ParseCity extends Component{
           </div>
 
         </div>
-
+        
 
         <hr/>
         <Forecast forecast={this.getForecast()} dates={this.state.days}/>
@@ -304,6 +330,18 @@ class ParseCity extends Component{
   }
 }
 
+class Icon extends Component{
+  render() {
+    const iconURL = "http://openweathermap.org/img/w/"+this.props.icon+".png";
+
+    return (
+      <div>
+        <img src={iconURL} alt={this.props.alt} style={{width:'100px', height:'90px'}}/>
+      </div>
+    );
+  }
+}
+
 class Forecast extends Component{
   
   generateCards(){
@@ -312,17 +350,22 @@ class Forecast extends Component{
     const dayWeather = this.props.forecast[0];
     const dayDescription = this.props.forecast[1];
     const dayWind = this.props.forecast[2];
+    const dayIcon = this.props.forecast[3];
 
     return dayWeather.map((item,i) => 
       
         <div className="col-sm-2 card card-body" key={i}>
           <div >
-              <h5 className="card-title text-center">{arr[i].split('-')[1]}/{arr[i].split('-')[2]}</h5>
-              <hr/>
-              <h6 className="card-subtitle mb-2 text-muted">{item} &#8457;</h6>
-              <h6 className="card-subtitle mb-2 text-muted">{dayDescription[i]}</h6>
-              <h6 className="card-subtitle mb-2 text-muted">wind: {dayWind[i]} mph</h6>
-            </div>
+            <h5 className="card-title text-center">{arr[i].split('-')[1]}/{arr[i].split('-')[2]}</h5>
+            <hr/>
+            <Icon icon={dayIcon[i]} alt={dayDescription[i]}/>
+            <hr/>
+            <h6 className="card-subtitle mb-2 text-muted">{dayDescription[i]}</h6>
+            <br/>
+            <h6 className="card-subtitle mb-2 text-muted">{item} &#8457;</h6>
+            <br/>
+            <h6 className="card-subtitle mb-2 text-muted">wind: {dayWind[i]} mph</h6> 
+          </div>
         </div>
       
     );
