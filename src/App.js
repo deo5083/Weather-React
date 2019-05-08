@@ -29,7 +29,7 @@ class App extends Component {
     
     const api_call = await fetch(call);
     const response = await api_call.json();
-
+    
     const build_forecast_call = "http://api.openweathermap.org/data/2.5/forecast"+build_call+",us&appid="+api_key+"&units=imperial";
     const forecast_call = await fetch(build_forecast_call);
     const forecast_response = await forecast_call.json();
@@ -170,6 +170,18 @@ class Info extends Component{
   }
 }
 
+class Day extends Component{
+  render() {
+    let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
+    return (
+      <span >
+        {days[this.props.day]}
+      </span>
+    );
+  }
+}
+
 class ParseCity extends Component{
   
   constructor(props) {
@@ -179,14 +191,16 @@ class ParseCity extends Component{
     };
   }
   
-
   formatDate(day){
     
     const d = new Date();
     let month = d.getMonth()+1;
-
+    
     if(month < 10){
       month = "0" + month;
+    }
+    if(day < 10){
+      day = "0" + day;
     }
     let temp = d.getFullYear() +"-"+ month +"-"+day;
 
@@ -253,40 +267,75 @@ class ParseCity extends Component{
 
   }
 
+  timeConverter(UNIX_timestamp){
+    var a = new Date(UNIX_timestamp * 1000);
+    var hour = a.getHours();
+    var min = a.getMinutes();
+    var sec = a.getSeconds();
+    var time = hour + ':' + min + ':' + sec ;
+    return time;
+  }
+
   parseInfo(){
     const result = this.props.weatherInfo;
-    
+    let today = new Date();
+
+    let output;
+    if(result.name){
+      output =  <div>
+                  <div className="text-right">
+                    <sub>As of: {this.timeConverter(result.dt)} EST</sub>
+                  </div>
+                  <h3>
+                    <span className="">
+                      {result.name}
+                      <br/>
+                      <small className="text-muted"> <Day day={today.getDay()} />, {today.getMonth()+1}/{today.getDate()}</small>
+                    </span>
+                  </h3>
+                    
+                  <div className="row">
+
+                    <div className="col-lg-4">
+                      <span className="h1">{result.main.temp}</span> 
+                      <span className="h2"> &#8457; </span>
+                      <br/>
+                      <span className="text-muted">Low/high: {result.main.temp_min}/{result.main.temp_max} &#8457; </span>
+                    </div>
+
+                    <div className="col-lg-6">
+                      <div className="row">
+                        <div className="col-sm-3">
+                          <Icon icon={result.weather[0].icon} alt={result.weather[0].description}/>
+                        </div>
+                        <div className="col-sm-7">
+                          <Info title="Description" data={result.weather[0].description}/>
+                          <Info title="Humidity" data={result.main.humidity+"%"}/>
+                          <Info title="Wind" data={result.wind.speed+" mph"}/>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+                  
+                  <hr/>
+                  <Forecast forecast={this.getForecast()} dates={this.state.days}/>
+                </div>
+    } else {
+      output =  <div>
+                  <br/>
+                  <div className="alert alert-danger text-center" role="alert">
+                    Something went wrong, please try again.
+                  </div>
+                </div>
+    }
+
     return (
 
       <div className="container">
-        <span className="h2 lead">{result.name}</span> 
-        <div className="row">
-
-          <div className="col-sm-4">
-            <span className="h1">{result.main.temp}</span> 
-            <span className="h2"> &#8457; </span>
-            <br/>
-            <sup>Low/high: {result.main.temp_min}/{result.main.temp_max} &#8457; </sup>
-          </div>
-
-          <div className="col-sm-6">
-            <div className="row">
-              <div className="col-sm-3">
-                <Icon icon={result.weather[0].icon} alt={result.weather[0].description}/>
-              </div>
-              <div className="col-sm-7">
-                <Info title="Description" data={result.weather[0].description}/>
-                <Info title="Humidity" data={result.main.humidity+"%"}/>
-                <Info title="Wind" data={result.wind.speed+" mph"}/>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
         
-        <hr/>
-        <Forecast forecast={this.getForecast()} dates={this.state.days}/>
+        {output}
         
       </div>
 
@@ -320,6 +369,13 @@ class Icon extends Component{
 
 class Forecast extends Component{
   
+  getDay(month, day){
+    let dateString = new Date().getFullYear()+"-"+month+"-"+day+"T00:00:00";
+    let newDay = new Date(dateString);
+    let formattedDate = newDay.getMonth() +"/"+newDay.getDate();
+    return <small> <Day day={newDay.getDay()}/>, {formattedDate} </small>;
+  }
+
   generateCards(){
 
     const arr = this.props.dates;
@@ -329,9 +385,10 @@ class Forecast extends Component{
     const dayIcon = this.props.forecast[3];
 
     return dayWeather.map((item,i) => 
-        <div className="col-sm-2 card card-body" key={i}>
+    
+        <div className="col-lg-2 card card-body" key={i}>
           <div >
-            <h5 className="card-title text-center">{arr[i].split('-')[1]}/{arr[i].split('-')[2]}</h5>
+            <h5 className="card-title text-center">{this.getDay(arr[i].split('-')[1], arr[i].split('-')[2])}</h5>
             <hr/>
             <Icon icon={dayIcon[i]} alt={dayDescription[i]}/>
             <hr/>
