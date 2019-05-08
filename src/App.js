@@ -29,7 +29,7 @@ class App extends Component {
     
     const api_call = await fetch(call);
     const response = await api_call.json();
-console.log(response);
+    
     const build_forecast_call = "http://api.openweathermap.org/data/2.5/forecast"+build_call+",us&appid="+api_key+"&units=imperial";
     const forecast_call = await fetch(build_forecast_call);
     const forecast_response = await forecast_call.json();
