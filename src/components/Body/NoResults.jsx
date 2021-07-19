@@ -7,7 +7,7 @@ class NoResults extends Component {
             <div>
                 <br />
                 <div className="alert alert-danger text-center" role="alert">
-                    "{this.props.searchWord}" was not found, please try again.
+                    {`"${this.props.searchWord}" was not found, please try again.`}
                 </div>
             </div>
 

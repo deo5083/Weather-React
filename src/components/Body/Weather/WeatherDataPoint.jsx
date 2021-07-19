@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import '../../App.css';
+import '../../../App.css';
 
-class Info extends Component {
+class WeatherDataPoint extends Component {
     render() {
         return (
             <div className="row">
@@ -12,4 +12,4 @@ class Info extends Component {
         );
     }
 }
-export default Info;
+export default WeatherDataPoint;

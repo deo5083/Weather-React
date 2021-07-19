@@ -5,9 +5,6 @@ import '../../../App.css';
 class Search extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            searchTerm: '',
-        }
     }
 
     handleKeyUp = (e) => {
@@ -27,7 +24,8 @@ class Search extends Component {
         return (
             <>
                 <input
-                    autoFocus id="searchInput"
+                    autoFocus 
+                    id="searchInput"
                     onKeyUp={this.handleKeyUp}
                     className="form-control mr-sm-2"
                     type="text"
@@ -35,7 +33,6 @@ class Search extends Component {
                     aria-label="Search"
                 />
                 <SearchButton
-                    searchTerm={this.state.searchTerm}
                     handleClick={this.handleClick}
                 />
             </>
