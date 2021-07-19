@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import '../../App.css';
+import '../../../App.css';
 
-class Icon extends Component {
+class WeatherIcon extends Component {
     render() {
         const iconURL = "http://openweathermap.org/img/w/" + this.props.icon + ".png";
         return (
@@ -11,4 +11,4 @@ class Icon extends Component {
         );
     }
 }
-export default Icon;
+export default WeatherIcon;

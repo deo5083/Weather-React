@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import '../../App.css';
 import NoResults from './NoResults';
-import ParseCity from './ParseCity';
+import Weather from './Weather/Weather';
+import Forecast from './Forecast/Forecast';
 
 class Body extends Component {
     constructor(props) {
@@ -37,7 +38,14 @@ class Body extends Component {
         let displayComponent;
         if (this.state.hasSearched) {
             if (this.state.searchStatus !== '' && this.state.searchStatus === "SEARCH_SUCCESS" && document.getElementById('searchInput').value !== "") {
-                displayComponent = <ParseCity weatherInfo={this.state.searchResult} forecastInfo={this.state.forecastResult} />;
+                displayComponent =
+                    <div>
+                        <br />
+                        <div className="jumbotron" style={{ paddingTop: '32px', paddingBottom: '32px' }}>
+                            <Weather {...this.props} weatherInfo={this.props.search.result.searchResult} />
+                            <Forecast {...this.props} forecastInfo={this.props.search.result.forecastResult} numOfForecastDays={5} />
+                        </div>
+                    </div>;
             } else {
                 displayComponent = <NoResults searchWord={this.props.search.query} />;
             }
